@@ -105,3 +105,14 @@ killall yes >/dev/null 2>&1
 testing "return failure" "pkill almost-certainly-not || echo failure" \
     "failure\n" "" ""
 
+
+yes /dev/block/dm-9 >/dev/null &
+proc=$!
+sleep 1
+testing "-9 -f does not match signal as pattern" "pkill -9 -f definitely-no-match || true; sleep 0.2; kill -0 $proc 2>/dev/null && echo alive" \
+  "alive\n" "" ""
+kill -9 $proc 2>/dev/null || true
+wait $proc 2>/dev/null || true
+
+testing "-9 without pattern fails" "pkill -9 2>/dev/null || echo failed" \
+  "failed\n" "" ""
