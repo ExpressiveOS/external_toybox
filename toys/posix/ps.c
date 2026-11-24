@@ -1998,9 +1998,10 @@ void pgrep_main(void)
 
 void pkill_main(void)
 {
-  char **args = toys.optargs;
-
-  if (!FLAG(l) && *args && **args=='-') TT.pgrep.L = *(args++)+1;
+  if (!FLAG(l) && *toys.optargs && **toys.optargs=='-') {
+    TT.pgrep.L = *toys.optargs+1;
+    memmove(toys.optargs, toys.optargs+1, sizeof(char *)*toys.optc--);
+  }
   if (!TT.pgrep.L) TT.pgrep.signal = SIGTERM;
   if (FLAG(V)) TT.tty = 1;
   pgrep_main();
